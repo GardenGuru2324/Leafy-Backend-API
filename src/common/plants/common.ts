@@ -1,7 +1,6 @@
 import { NotFoundError } from '../../errors/error';
 import { errorMessages } from '../../errors/errorMessages';
 import { Plant } from '../../types/plant/plant';
-import { PlantLocation } from '../../types/plantLocation/plantLocation';
 import { isNullOrUndefined } from '../common';
 
 export const doesPlantExist = (plant: Plant): void => {
@@ -9,7 +8,7 @@ export const doesPlantExist = (plant: Plant): void => {
 		throw new NotFoundError(errorMessages.plantNotFound);
 };
 
-export const doesPlantLocationExist = (plantLocation: PlantLocation): void => {
-	if (isNullOrUndefined(plantLocation))
-		throw new NotFoundError(errorMessages.plantLocationNotFound);
+export const doesHavePlants = (plants: Plant[]): void => {
+	if (plants.length == 0)
+		throw new NotFoundError(errorMessages.plantsNotFound);
 };
