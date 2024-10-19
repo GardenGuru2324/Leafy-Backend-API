@@ -1,6 +1,7 @@
 import express from 'express';
 
 import allPlants from './plants/getAllPlants';
+import plantDetails from './plants/getPlantDetails';
 
 import { closeDatabase, connectDatabase } from '../database/db';
 
@@ -24,5 +25,6 @@ router.get('/', async (req, res) => {
 
 // Plants
 router.use(allPlants);
+router.use(plantDetails);
 
 export default router;

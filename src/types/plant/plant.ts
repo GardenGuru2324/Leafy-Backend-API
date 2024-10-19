@@ -18,3 +18,8 @@ export interface Plant {
 	plantMaxTemp: number;
 	userId: string;
 }
+
+export interface PlantsReturnObject {
+	nextPage: boolean;
+	plants: Plant[];
+}
