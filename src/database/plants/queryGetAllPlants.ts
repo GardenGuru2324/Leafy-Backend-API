@@ -1,39 +1,48 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient } from "mongodb";
 
-import 'dotenv/config';
-import { Plant, PlantsReturnObject } from '../../types/plant/plant';
-import { Query } from '../../types/Query';
+import "dotenv/config";
+import { Plant, PlantsReturnObject } from "../../types/plant/plant";
+import { Query } from "../../types/Query";
 
 const uri: string = process.env.MONGO_CONNECT_URL!;
 const database: string = process.env.DATABASE!;
 const client = new MongoClient(uri);
 
-export const queryGetAllPlants = async (
-	query: Query,
-	page: number,
-): Promise<Plant[] | unknown> => {
-	const itemsPerPage: number = 4;
-	try {
-		const plants: Plant[] = (await client
-			.db(database)
-			.collection('Plants')
-			.find(query)
-			.project({ plantName: 1, plantId: 1, image: 1 })
-			.skip((page - 1) * itemsPerPage)
-			.limit(itemsPerPage + 1)
-			.toArray()) as Plant[];
+export const queryGetAllPlants = async (query: Query, page: number, limit: number): Promise<Plant[] | unknown> => {
+  const itemsPerPage: number = limit;
 
-		const nextPage: boolean = plants.length > itemsPerPage;
+  try {
+    const plants: Plant[] = (await client
+      .db(database)
+      .collection("Plants")
+      .find(query)
+      .skip((page - 1) * itemsPerPage)
+      .limit(itemsPerPage + 1)
+      .toArray()) as Plant[];
 
-		if (nextPage) plants.pop();
+    const getAllPlantsFromDb: Plant[] = await queryAllPlantsOfDb();
 
-		const plantsReturnObject: PlantsReturnObject = {
-			nextPage,
-			plants,
-		};
+    return createPlantsReturnObject(plants, itemsPerPage, getAllPlantsFromDb, page);
+  } catch (error) {
+    return error;
+  }
+};
 
-		return plantsReturnObject;
-	} catch (error) {
-		return error;
-	}
+const queryAllPlantsOfDb = async (): Promise<Plant[]> => {
+  return (await client.db(database).collection("Plants").find({}).toArray()) as Plant[];
+};
+
+const createPlantsReturnObject = (plants: Plant[], itemsPerPage: number, getAllPlantsFromDb: Plant[], page: number): PlantsReturnObject => {
+  const hasNextPage: boolean = plants.length > itemsPerPage;
+  const amoutOfPages: number = getAllPlantsFromDb.length / itemsPerPage;
+
+  if (hasNextPage) plants.pop();
+
+  return {
+    itemsPerPage,
+    currentPage: page,
+    amoutOfPages,
+    hasNextPage,
+    plants,
+  };
 };
