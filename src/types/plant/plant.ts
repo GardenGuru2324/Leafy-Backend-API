@@ -32,8 +32,3 @@ export interface PlantsReturnObject {
   hasNextPage: boolean;
   plants: Plant[];
 }
-
-export interface PlantsReturnObject {
-	nextPage: boolean;
-	plants: Plant[];
-}
