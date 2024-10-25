@@ -21,7 +21,7 @@ export const queryGetAllPlants = async (query: Query, page: number, limit: numbe
       .toArray()) as Plant[];
 
     const getAllPlantsFromDb: Plant[] = await queryAllPlantsOfDb();
-
+    // query ook gebruiker, zonder saerch gaat goed met saerch geeft hij amout of page verkeert aan hij kijkt dan terug naar al de planten en niet all de lanten met de saerch nog te fixen
     return createPlantsReturnObject(plants, itemsPerPage, getAllPlantsFromDb, page);
   } catch (error) {
     return error;
