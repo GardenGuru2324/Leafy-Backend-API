@@ -1,4 +1,3 @@
 export interface Query {
-	plantName?: { $regex: string; $options: string };
-	locationId?: string;
+  plantName?: { $regex: string; $options: string };
 }

@@ -20,21 +20,21 @@ export const queryGetAllPlants = async (query: Query, page: number, limit: numbe
       .limit(itemsPerPage + 1)
       .toArray()) as Plant[];
 
-    const getAllPlantsFromDb: Plant[] = await queryAllPlantsOfDb();
-    // query ook gebruiker, zonder saerch gaat goed met saerch geeft hij amout of page verkeert aan hij kijkt dan terug naar al de planten en niet all de lanten met de saerch nog te fixen
+    const getAllPlantsFromDb: Plant[] = await queryAllPlantsOfDb(query);
+
     return createPlantsReturnObject(plants, itemsPerPage, getAllPlantsFromDb, page);
   } catch (error) {
     return error;
   }
 };
 
-const queryAllPlantsOfDb = async (): Promise<Plant[]> => {
-  return (await client.db(database).collection("Plants").find({}).toArray()) as Plant[];
+const queryAllPlantsOfDb = async (query: Query): Promise<Plant[]> => {
+  return (await client.db(database).collection("Plants").find(query).toArray()) as Plant[];
 };
 
 const createPlantsReturnObject = (plants: Plant[], itemsPerPage: number, getAllPlantsFromDb: Plant[], page: number): PlantsReturnObject => {
   const hasNextPage: boolean = plants.length > itemsPerPage;
-  const amoutOfPages: number = getAllPlantsFromDb.length / itemsPerPage;
+  const amoutOfPages: number = Math.ceil(getAllPlantsFromDb.length / itemsPerPage);
 
   if (hasNextPage) plants.pop();
 
