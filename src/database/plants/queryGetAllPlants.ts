@@ -3,6 +3,7 @@ import { MongoClient } from "mongodb";
 import "dotenv/config";
 import { Plant, PlantsReturnObject } from "../../types/plant/plant";
 import { Query } from "../../types/Query";
+import "dotenv/config";
 
 const uri: string = process.env.MONGO_CONNECT_URL!;
 const database: string = process.env.DATABASE!;
