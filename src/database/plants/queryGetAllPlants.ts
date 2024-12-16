@@ -3,6 +3,7 @@ import { MongoClient } from "mongodb";
 import "dotenv/config";
 import { Plant, PlantsReturnObject } from "../../types/plant/plant";
 import { Query } from "../../types/Query";
+import "dotenv/config";
 
 const uri: string = process.env.MONGO_CONNECT_URL!;
 const database: string = process.env.DATABASE!;
@@ -20,7 +21,7 @@ export const queryGetAllPlants = async (query: Query, page: number, limit: numbe
       .limit(itemsPerPage + 1)
       .toArray()) as Plant[];
 
-    const getAllPlantsFromDb: Plant[] = await queryAllPlantsOfDb();
+    const getAllPlantsFromDb: Plant[] = await queryAllPlantsOfDb(query);
 
     return createPlantsReturnObject(plants, itemsPerPage, getAllPlantsFromDb, page);
   } catch (error) {
@@ -28,13 +29,13 @@ export const queryGetAllPlants = async (query: Query, page: number, limit: numbe
   }
 };
 
-const queryAllPlantsOfDb = async (): Promise<Plant[]> => {
-  return (await client.db(database).collection("Plants").find({}).toArray()) as Plant[];
+const queryAllPlantsOfDb = async (query: Query): Promise<Plant[]> => {
+  return (await client.db(database).collection("Plants").find(query).toArray()) as Plant[];
 };
 
 const createPlantsReturnObject = (plants: Plant[], itemsPerPage: number, getAllPlantsFromDb: Plant[], page: number): PlantsReturnObject => {
   const hasNextPage: boolean = plants.length > itemsPerPage;
-  const amoutOfPages: number = getAllPlantsFromDb.length / itemsPerPage;
+  const amoutOfPages: number = Math.ceil(getAllPlantsFromDb.length / itemsPerPage);
 
   if (hasNextPage) plants.pop();
 
